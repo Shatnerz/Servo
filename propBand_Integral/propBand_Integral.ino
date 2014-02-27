@@ -12,6 +12,7 @@ double prevError;
 double Tset;
 double band;
 double out;
+double integral=0;
 
 void userSetup() {
   /* 
@@ -32,10 +33,11 @@ void userSetup() {
   RECORD(e_temperature,"K");
   RECORD(error,"");
 //  RECORD(derivative,"s<sup>-1</sup>"); /* you can use HTML, this will disp[ay a super-script */
+  RECORD(integral,"s");
   RECORD(out,"DAC units");
   INITIALIZE(dt,0.1,"s");
-  INITIALIZE(Tset,350,"K");
-  INITIALIZE(band,5,"K");
+  INITIALIZE(Tset,393,"K");
+  INITIALIZE(band,1,"K");
 }
 
 void userAction() {
@@ -63,15 +65,33 @@ void userAction() {
   temperature = thermoSlope * vThermo + thermoOffset;
   e_temperature = eVThermo * vThermo;
   prevError = error;
-  error = (temperature - Tset) / band;
-  double Ton = Tset;
-  double Toff = Tset;
+  error = -(temperature - Tset) / band;
+  double Ton = Tset - band / 2;
+  double Toff = Tset + band / 2;
   
-  if ((out > 0) && (temperature > Toff)) {
+  if ((out > 0) && (temperature > Toff)) 
+    {
     out = 0;
-  } else if ((out == 0) && (temperature < Ton)) {
+    integral=0;
+    } 
+  else if (temperature < Ton) 
+    {
     out = 255;
-  }
+    integral=0;
+    } 
+  else if ((temperature > Ton) && (temperature < Toff))
+    {
+    integral += error*dt;
+    if (0.5+error+integral>0)
+    {
+      out = sqrt(0.5+error+integral/5)*255;
+    }
+    else {out=0;}  
+    }
+     if (out > 255) 
+    {
+      out=255;
+    }
   int dacVal = out;
   /*
   Serial.print("DEBUG\tdacVal = ");
@@ -168,7 +188,7 @@ void setPeriod (int period) { // period in ms
 void setup() {
   Serial.begin(115200);
   Serial.print("\nBOOT\n");
-  Serial.print("DEBUG\tTEST!!!!!!!!!!!!!!!!!!!!!!!!\n");
+  Serial.print("DEBUG\tHello World!\n");
   analogWrite(3, 127);
   analogWrite(5, 127);
   analogWrite(6, 127);
@@ -281,7 +301,6 @@ void parseCommand(void) {
       Serial.print("\nREADY\n");
       return;
     }
-    
   }
   Serial.print("DEBUG\tparseCommand(): Unhandled command\n");
   return;
@@ -316,8 +335,8 @@ void getCommand() {
     return;
   }
   command[commandIndex++] = ch;
-}
 
+}
 void loop() {
   char buf[256];
   if (Serial.available()) getCommand();
@@ -340,11 +359,6 @@ void loop() {
       Serial.print(ptr->units);
       Serial.print("\n");
     }
-   /* if(oc*dt>60)
-    {
-       running =0;
-       userStop(); 
-    }*/
     oc++;
   }
 }

@@ -1,0 +1,15 @@
+load 'servo_int_band1.mat'
+plot(temperature)
+hold on
+
+load 'servo_int_band2.mat'
+plot(temperature,'r')
+
+load 'servo_int_band5.mat'
+plot(temperature,'r')
+
+load 'servo_band5.mat'
+plot(temperature,'r')
+
+load 'servo_band5.mat'
+plot(temperature,'r')
