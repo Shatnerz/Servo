@@ -1,0 +1,12 @@
+figure(2)
+hold on
+
+load 'servo_pc_b1_350K.mat'
+plot(temperature,'.')
+
+load 'servo_onoff_350K.mat'
+plot(temperature,'.r')
+
+legend('b1 350','onoff 350')
+
+hold off

@@ -1,17 +1,24 @@
 figure(2)
 hold on
 
-load 'servo_band5.mat'
+load 'servo_pc_b1_350K.mat'
 plot(temperature,'.')
 
-load 'servo_onoff.mat'
-plot([zeros(1,400) temperature],'g.')
+load 'servo_pc_b1_370K.mat'
+plot(temperature,'g.')
 
-load 'servo_prop_band1.mat'
+load 'servo_pc_b2_350K.mat'
 plot( temperature,'r.')
-load 'servo_prop_band2.mat'
+
+load 'servo_pc_b2_370K.mat'
 plot(temperature,'c.')
 
-legend('b5','onoff','b1','b2')
+load 'servo_pc_b5_350K.mat'
+plot( temperature,'y.')
+
+load 'servo_pc_b5_370K.mat'
+plot(temperature,'m.')
+
+%legend('b1 350','b1 370','b2 350','b2 370','b5 350','b5 370')
 
 hold off
